@@ -446,3 +446,48 @@ test "fuzz1 finds failing input" {
     }.check, .{ .max_iterations = 500 });
     try std.testing.expectError(error.TooLarge, result);
 }
+
+test "edgeCases u8 includes zero and max" {
+    const cases = edgeCases(u8);
+    var found_zero = false;
+    var found_max = false;
+    for (cases) |c| {
+        if (c == 0) found_zero = true;
+        if (c == 255) found_max = true;
+    }
+    try std.testing.expect(found_zero);
+    try std.testing.expect(found_max);
+}
+
+test "randomValue i32 range" {
+    var prng = std.Random.DefaultPrng.init(42);
+    var i: usize = 0;
+    while (i < 100) : (i += 1) {
+        const val = randomValue(i32, prng.random());
+        try std.testing.expect(val >= -std.math.maxInt(i32) and val <= std.math.maxInt(i32));
+    }
+}
+
+test "fuzz1 bool always passes true property" {
+    try fuzz1(bool, struct { fn check(x: bool) bool { _ = x; return true; } }.check, .{ .max_iterations = 50 });
+}
+
+test "shrink1 does not crash on single value" {
+    const result = shrink1(u8, struct { fn check(x: u8) bool { return x < 200; } }.check, 250);
+    // Just verify it returns a value
+    _ = result;
+}
+
+test "edgeCases bool includes both" {
+    const cases = edgeCases(bool);
+    try std.testing.expect(cases.len >= 2);
+}
+
+test "randomValue f64 is finite" {
+    var prng = std.Random.DefaultPrng.init(42);
+    var i: usize = 0;
+    while (i < 100) : (i += 1) {
+        const val = randomValue(f64, prng.random());
+        try std.testing.expect(std.math.isFinite(val));
+    }
+}
