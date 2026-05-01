@@ -400,3 +400,49 @@ test "randomValue for usize" {
         try std.testing.expect(val <= std.math.maxInt(usize));
     }
 }
+
+
+test "edgeCases u8 includes zero and max" {
+    const cases = edgeCases(u8);
+    var has_zero = false;
+    var has_max = false;
+    for (cases) |c| {
+        if (c == 0) has_zero = true;
+        if (c == 255) has_max = true;
+    }
+    try std.testing.expect(has_zero);
+    try std.testing.expect(has_max);
+}
+
+test "edgeCases i8 includes extremes" {
+    const cases = edgeCases(i8);
+    var has_min = false;
+    var has_max = false;
+    for (cases) |c| {
+        if (c == -128) has_min = true;
+        if (c == 127) has_max = true;
+    }
+    try std.testing.expect(has_min);
+    try std.testing.expect(has_max);
+}
+
+test "randomValue bool produces both" {
+    var prng = std.Random.DefaultPrng.init(42);
+    var got_true = false;
+    var got_false = false;
+    for (0..100) |_| {
+        const val = randomValue(bool, prng.random());
+        if (val) got_true = true else got_false = true;
+    }
+    try std.testing.expect(got_true);
+    try std.testing.expect(got_false);
+}
+
+test "fuzz1 finds failing input" {
+    const result = fuzz1(u8, struct {
+        fn check(x: u8) !void {
+            if (x >= 200) return error.TooLarge;
+        }
+    }.check, .{ .max_iterations = 500 });
+    try std.testing.expectError(error.TooLarge, result);
+}
