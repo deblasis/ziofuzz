@@ -22,14 +22,14 @@ test "fuzz adder" {
 }
 ```
 
-Run with: `zig build fuzz` — coverage-guided, parallel, corpus-managed.
+Run with: `zig build fuzz` - coverage-guided, parallel, corpus-managed.
 
 ## When ziofuzz might still be useful
 
-- **No fuzz build step needed** — runs inside `zig test` like any other test
-- **Simple property-based testing** — `fuzz1(T, property, config)` is quick to write
-- **Edge case generation** — `edgeCases(T)` gives you boundary values without setting up Smith
-- **Learning/reference** — straightforward implementation of random + edge-case + shrink
+- **No fuzz build step needed** - runs inside `zig test` like any other test
+- **Simple property-based testing** - `fuzz1(T, property, config)` is quick to write
+- **Edge case generation** - `edgeCases(T)` gives you boundary values without setting up Smith
+- **Learning/reference** - straightforward implementation of random + edge-case + shrink
 
 Supported types are `bool`, the fixed width integers up to 64 bits, `usize`,
 `f32`, `f64`, and enums with up to 5 fields. Anything else is a compile error.
@@ -37,7 +37,7 @@ Supported types are `bool`, the fixed width integers up to 64 bits, `usize`,
 ```zig
 const ziofuzz = @import("ziofuzz");
 
-// Quick property check — no build step, runs in `zig test`
+// Quick property check - no build step, runs in `zig test`
 // The property takes the generated values and returns an error to fail.
 try ziofuzz.fuzz1(u8, struct {
     fn check(x: u8) !void {
