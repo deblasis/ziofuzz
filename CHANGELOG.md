@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Initial release
-- coverage-guided fuzzing engine
-- corpus management
-- failure shrinking
-- custom input generators
+- `randomValue` and `edgeCases` for the builtin scalar types and simple enums
+- `edgeValue`, edge-biased random generation
+- `fuzz1`, `fuzz2` and `fuzz3` property runners with a fixed iteration count
+- `shrink1`, a randomized shrinker for single-parameter failures

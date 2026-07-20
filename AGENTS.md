@@ -2,7 +2,7 @@
 
 ## Overview
 
-Fuzz testing library for Zig. Provides coverage-guided fuzzing, corpus management, and integration with zig test. Generate random inputs, find edge cases, and shrink failures to minimal reproducing cases.
+Small random property testing library for Zig. Generates random and edge-biased inputs, runs a property a fixed number of times, and can randomly shrink a single failing input. There is no coverage instrumentation and no corpus. It runs inside `zig test` like any other test.
 
 ## Project Structure
 
@@ -19,7 +19,7 @@ build.zig        - Build configuration
 ```bash
 zig build test          # Run tests
 zig build run-example   # Run the example
-zig build               - Build the library
+zig fmt --check .       # Check formatting
 ```
 
 ## Architecture

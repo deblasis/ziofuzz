@@ -3,7 +3,7 @@
 > **Note:** Zig 0.16 ships with [`std.testing.fuzz`](https://github.com/ziglang/zig/blob/master/lib/std/testing.zig#L1243) and [`std.testing.Smith`](https://github.com/ziglang/zig/blob/master/lib/testing/Smith.zig), a coverage-guided fuzzer with structured value generation, corpus management, and build system integration via `zig build fuzz`.
 > **Use `std.testing.fuzz` for production code.**
 >
-> ziofuzz was a learning exercise to understand property-based and fuzz testing concepts before discovering the stdlib implementation. It remains here as a simple, dependency-free property-based tester that runs inside `zig test` without needing the fuzz build step.
+> ziofuzz was a learning exercise to understand property-based and fuzz testing concepts before discovering the stdlib implementation. It remains here as a simple, dependency-free property-based tester that runs inside `zig test` without needing the fuzz build step. It is not coverage guided and it keeps no corpus. It just draws random and edge-biased values for a fixed number of iterations.
 
 ## What `std.testing.fuzz` gives you
 
@@ -31,16 +31,22 @@ Run with: `zig build fuzz` — coverage-guided, parallel, corpus-managed.
 - **Edge case generation** — `edgeCases(T)` gives you boundary values without setting up Smith
 - **Learning/reference** — straightforward implementation of random + edge-case + shrink
 
+Supported types are `bool`, the fixed width integers up to 64 bits, `usize`,
+`f32`, `f64`, and enums with up to 5 fields. Anything else is a compile error.
+
 ```zig
 const ziofuzz = @import("ziofuzz");
 
 // Quick property check — no build step, runs in `zig test`
+// The property takes the generated values and returns an error to fail.
 try ziofuzz.fuzz1(u8, struct {
-    fn check(x: u8) bool { return x + 0 == x; }
+    fn check(x: u8) !void {
+        try std.testing.expect(x +| 0 == x);
+    }
 }.check, .{ .max_iterations = 1000 });
 
 // Edge cases for a type
-const cases = ziofuzz.edgeCases(u8); // [0, 1, 127, 128, 254, 255]
+const cases = ziofuzz.edgeCases(u8); // [0, 1, 127, 255]
 ```
 
 ## License
